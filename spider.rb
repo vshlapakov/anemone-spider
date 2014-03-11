@@ -35,7 +35,7 @@ Anemone.crawl("http://www.argenteam.net/") do |anemone|
            {:url => page.url,
             :title => title,
             :description => description,
-            :image_url => image},
+            :images => [image]},
            {:start => offset})
     offset += 1
     exit if offset > 10
