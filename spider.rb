@@ -7,31 +7,37 @@ require 'uri'
 require 'anemone'
 
 
-jobdata = JSON.parse(File.read(ENV['JOB_DATA']))
-hubstorage = ENV.fetch('SHUB_STORAGE', 'https://storage.scrapinghub.com')
-JOBKEY = jobdata['key']
-JOBAUTH = jobdata['auth']
-ITEMSURL = URI.parse("#{hubstorage}/items/#{JOBKEY}")
-puts ITEMSURL
-#ITEMSURL = URI.parse('http://requestb.in/17qg9r11')
+JOBDATA = JSON.parse(File.read(ENV['JOB_DATA']))
+HUBSTORAGE = ENV.fetch('SHUB_STORAGE', 'https://storage.scrapinghub.com')
 
 
-def senditem(item)
-  http = Net::HTTP.new(ITEMSURL.host, ITEMSURL.port)
-  req = Net::HTTP::Post.new(ITEMSURL.request_uri)
-  req.basic_auth(JOBKEY, JOBAUTH)
+def upload(prefix, item, params)
+  uri = URI("#{HUBSTORAGE}/#{prefix}/#{JOBDATA['key']}")
+  uri.query = URI.encode_www_form(params)
+  http = Net::HTTP.new(uri.host, uri.port)
+  req = Net::HTTP::Post.new(uri.request_uri)
+  req.basic_auth(JOBDATA['key'], JOBDATA['auth'])
   req.body = JSON.generate(item)
   req.content_type = 'application/json'
   res = http.request(req)
 end
 
 
-count = 0
-Anemone.crawl("http://www.suggestmemovie.com/") do |anemone|
-  anemone.on_every_page do |page|
-    count += 1
+offset = 0
+Anemone.crawl("http://www.argenteam.net/") do |anemone|
+  anemone.on_pages_like(/movie\/\d+\/.*/)do |page|
     puts page.url
-    senditem({:url => page.url})
-    exit if count > 10
+    title = page.doc.at_xpath("//div[@class='pmovie']/h1").text rescue nil
+    description = page.doc.at_xpath("//div[@class='pmovie']/div[@class='details']").text rescue nil
+    image = page.doc.at_xpath("//div[@class='pmovie']/img[@class='poster']").attribute("src") rescue nil
+    
+    upload('items',
+           {:url => page.url,
+            :title => title,
+            :description => description,
+            :image_url => image},
+           {:start => offset})
+    offset += 1
+    exit if offset > 10
   end
 end
