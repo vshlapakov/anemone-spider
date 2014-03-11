@@ -1,1 +1,1 @@
-crawler: bundle exec /app/spider.rb
+crawler: bundle exec ./spider.rb
