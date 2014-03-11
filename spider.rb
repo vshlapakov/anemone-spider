@@ -52,7 +52,7 @@ class Uploader
     req = Net::HTTP::Post.new(uri.request_uri)
     req.basic_auth(JOBDATA['key'], JOBDATA['auth'])
     req.body = items.map(&:to_json).join('\n')
-    req.content_type = 'application/json'
+    req.content_type = 'application/x-jsonlines'
     #puts req.body
     res = http.request(req)
   end
