@@ -31,7 +31,10 @@ Anemone.crawl("http://www.argenteam.net/") do |anemone|
     description = page.doc.at_xpath("//div[@class='pmovie']/div[@class='details']").text rescue nil
     image = page.doc.at_xpath("//div[@class='pmovie']/img[@class='poster']").attribute("src") rescue nil
 
-    upload('logs', {:message => page.url, :level => 20})
+    upload('logs',
+           {:message => page.url, :level => 20},
+           {:start => offset})
+
     upload('items',
            {:url => page.url,
             :title => title,
