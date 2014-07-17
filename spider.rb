@@ -6,12 +6,18 @@ require 'net/http'
 require 'uri'
 require 'anemone'
 
-
-JOBDATA = JSON.parse(File.read(ENV['JOB_DATA']))
+JOBDATAFILE = ENV.fetch('JOB_DATA', nil)
+if JOBDATAFILE then
+  JOBDATA = JSON.parse(File.read(ENV['JOB_DATA']))
+else
+  JOBDATA = nil
+end
 HUBSTORAGE = ENV.fetch('SHUB_STORAGE', 'https://storage.scrapinghub.com')
 
 
 def upload(prefix, item, params)
+  puts "--> HS #{prefix} #{item} #{params}"
+  return if not JOBDATA
   uri = URI("#{HUBSTORAGE}/#{prefix}/#{JOBDATA['key']}")
   uri.query = URI.encode_www_form(params)
   http = Net::HTTP.new(uri.host, uri.port)
@@ -20,23 +26,21 @@ def upload(prefix, item, params)
   req.body = JSON.generate(item)
   req.content_type = 'application/json'
   res = http.request(req)
+  puts "<-- HS #{res.code} #{res.url} #{res.body}"
 end
 
 
 offset = 0
 Anemone.crawl("http://www.argenteam.net/") do |anemone|
-  anemone.on_pages_like(/movie\/\d+\/.*/)do |page|
-    puts page.url
+  anemone.on_pages_like(/movie\/\d+\/.*/) do |page|
+    puts "#{page.code} #{page.url}"
     title = page.doc.at_xpath("//div[@class='pmovie']/h1").text rescue nil
     description = page.doc.at_xpath("//div[@class='pmovie']/div[@class='details']").text rescue nil
     image = page.doc.at_xpath("//div[@class='pmovie']/img[@class='poster']").attribute("src") rescue nil
 
-    upload('logs',
-           {:message => page.url, :level => 20},
-           {:start => offset})
-
+    upload('logs', {:message => page.url.to_s, :level => 20}, {:start => offset})
     upload('items',
-           {:url => page.url,
+           {:url => page.url.to_s,
             :title => title,
             :description => description,
             :images => [image]},
