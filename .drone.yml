@@ -1,0 +1,3 @@
+image: ruby
+script:
+  - echo 1
