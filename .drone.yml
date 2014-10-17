@@ -1,3 +1,13 @@
 image: ruby
 script:
   - echo 1
+
+publish:
+  docker:
+    docker_host: tcp://5.9.96.8:2375
+    docker_version: 1.3.0
+    registry_login: true
+    username: foo
+    password: bar
+    email: test@scrapinghub.com
+    image_name: apps/dash
