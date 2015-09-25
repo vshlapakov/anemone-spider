@@ -7,11 +7,11 @@ require 'uri'
 require 'anemone'
 
 JOBDATAFILE = ENV.fetch('JOB_DATA', nil)
-if JOBDATAFILE then
-  JOBDATA = JSON.parse(File.read(ENV['JOB_DATA']))
-else
-  JOBDATA = nil
-end
+#if JOBDATAFILE then
+#  JOBDATA = JSON.parse(File.read(ENV['JOB_DATA']))
+#else
+JOBDATA = nil
+#end
 HUBSTORAGE = ENV.fetch('SHUB_STORAGE', 'https://storage.scrapinghub.com')
 
 
