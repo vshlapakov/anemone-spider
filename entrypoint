@@ -1,8 +1,8 @@
 #!/bin/sh
 
 if [ $1 = "start-crawl" ]; then
-    echo "Running spider"
-    /app/spider.rb
+    echo "Running crawler"
+    /app/crawler.rb
 else
     echo "Wrong params"
 fi
