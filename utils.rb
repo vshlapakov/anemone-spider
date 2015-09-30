@@ -38,32 +38,32 @@ module CrawlTools
 
   def decode_uri(uri: nil, env: nil)
     if !env.nil?
-        uri = ENV.fetch(env)
+      uri = ENV.fetch(env)
     elsif uri.nil?
-        raise ValueError, "An uri or envvar is required"
+      raise ValueError, "An uri or envvar is required"
     end
 
     mime_type = 'application/json'
 
     # data:[<MIME-type>][;charset=<encoding>][;base64],<data>
     if uri.start_with?("data:")
-        prefix, _, data = uri.rpartition(',')
-        mods = {}
+      prefix, _, data = uri.rpartition(',')
+      mods = {}
 
-        prefix[5..-1].split(';').each_with_index do |value,idx|
-            if idx == 0
-                mime_type = value or mime_type
-            elsif value.include? '='
-                k, _, v = value.partition('=')
-                mods[k] = v
-            else
-                mods[value] = nil
-            end
+      prefix[5..-1].split(';').each_with_index do |value,idx|
+        if idx == 0
+          mime_type = value or mime_type
+        elsif value.include? '='
+          k, _, v = value.partition('=')
+          mods[k] = v
+        else
+          mods[value] = nil
         end
+      end
 
-        if mods.include? 'base64'; data = Base64.decode64(data) end
-        if mime_type.eql? 'application/json'
-            return JSON.parse(data) else return data end
+      if mods.include? 'base64'; data = Base64.decode64(data) end
+      if mime_type.eql? 'application/json'
+        return JSON.parse(data) else return data end
 
     end
 
