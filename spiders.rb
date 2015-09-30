@@ -1,5 +1,6 @@
 require 'anemone'
 require 'net/http'
+require "time"
 require 'uri'
 
 class ArgenteamSpider
@@ -20,15 +21,22 @@ class ArgenteamSpider
     shub_storage = @settings[:SHUB_STORAGE]
     return if not job_data
 
-    uri = URI("#{shub_storage}/#{prefix}/#{job_data[:key]}")
+    job_key, job_auth = job_data["key"], job_data["auth"]
+    uri = URI.join("#{shub_storage}", "#{prefix}/#{job_key}/")
     uri.query = URI.encode_www_form(params)
     http = Net::HTTP.new(uri.host, uri.port)
     req = Net::HTTP::Post.new(uri.request_uri)
-    req.basic_auth(job_data[:key], job_data[:auth])
+    req.basic_auth(job_key, job_auth)
     req.body = JSON.generate(item)
     req.content_type = 'application/json'
-    res = http.request(req)
-    logger.info "<-- HS #{res.code} #{res.url} #{res.body}"
+    logger.debug "HS request: #{uri} #{uri.query} #{req.body}"
+
+    response = http.request(req)
+    if response.is_a?(Net::HTTPSuccess)
+        logger.info "<-- HS #{response.code} #{response.uri} #{response.body}"
+    else
+        logger.warning "HS bad response #{response}"
+    end
   end
 
   def crawl
@@ -45,7 +53,8 @@ class ArgenteamSpider
 
         upload('logs',
           {:message => page.url.to_s,
-           :level => 20},
+           :level => 20,
+           :time => Time.now.to_i},
            {:start => offset})
         upload('items',
           {:url => page.url.to_s,
