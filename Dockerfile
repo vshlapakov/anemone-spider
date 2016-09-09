@@ -8,9 +8,11 @@ RUN apt-key adv --keyserver keyserver.ubuntu.com --recv 80F70E11F0F0D5F10CB20E62
 RUN gem install bundler
 WORKDIR /app/
 ADD Gemfile* /app/
+RUN bundle config --global silence_root_warning 1
 RUN bundle install
 
 RUN apt-get install -y python
-ENTRYPOINT ["/app/entrypoint"]
 
 ADD . /app
+RUN ln -s /app/start-crawl /usr/sbin/start-crawl
+RUN ln -s /app/list-spiders /usr/sbin/list-spiders

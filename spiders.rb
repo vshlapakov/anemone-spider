@@ -36,7 +36,7 @@ class ArgenteamSpider
     if response.is_a?(Net::HTTPSuccess)
         logger.info "<-- HS #{response.code} #{response.uri} #{response.body}"
     else
-        logger.warning "HS bad response #{response}"
+        logger.warn "HS bad response #{response}"
     end
   end
 
