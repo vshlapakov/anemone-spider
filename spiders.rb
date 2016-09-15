@@ -22,7 +22,7 @@ class ArgenteamSpider
     return if not job_data
 
     job_key, job_auth = job_data["key"], job_data["auth"]
-    uri = URI.join("#{shub_storage}", "#{prefix}/#{job_key}/")
+    uri = URI.join("#{shub_storage}", "#{prefix}/#{job_key}")
     uri.query = URI.encode_www_form(params)
     http = Net::HTTP.new(uri.host, uri.port)
     http.use_ssl = (uri.scheme == "https")
