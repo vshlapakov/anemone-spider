@@ -29,52 +29,19 @@ module CrawlTools
 
   def parse_environment
     {
-      :JOB_DATA => decode_uri(env: 'JOB_DATA'),
-      :JOB_SETTINGS => decode_uri(env: 'JOB_SETTINGS'),
+      :JOB_DATA => decode_json_from_env('SHUB_JOB_DATA'),
+      :JOB_SETTINGS => decode_json_from_env('SHUB_SETTINGS'),
       :SHUB_STORAGE => ENV.fetch('SHUB_STORAGE', 'https://storage.scrapinghub.com'),
       :SHUB_APIURL => ENV.fetch('SHUB_APIURL', 'https://dash.scrapinghub.com')
     }
   end
 
-  def decode_uri(uri: nil, env: nil)
-    if !env.nil?
-      uri = ENV.fetch(env)
-    elsif uri.nil?
-      raise ValueError, "An uri or envvar is required"
-    end
-
-    mime_type = 'application/json'
-
-    # data:[<MIME-type>][;charset=<encoding>][;base64],<data>
-    if uri.start_with?("data:")
-      prefix, _, data = uri.rpartition(',')
-      mods = {}
-
-      prefix[5..-1].split(';').each_with_index do |value,idx|
-        if idx == 0
-          mime_type = value or mime_type
-        elsif value.include? '='
-          k, _, v = value.partition('=')
-          mods[k] = v
-        else
-          mods[value] = nil
-        end
-      end
-
-      if mods.include? 'base64'; data = Base64.decode64(data) end
-      if mime_type.eql? 'application/json'
-        return JSON.parse(data) else return data end
-
-    end
-
-    if uri.start_with?("{"); return JSON.parse(uri) end
-
-    if uri.start_with?('/'); uri = 'file://' + uri end
-    if uri.start_with?('file://'); JSON.parse(File.read(uri[7..-1])) end
-
+  def decode_json_from_env(env)
+    uri = ENV.fetch(env)
+    JSON.parse(uri)
   end
 
   module_function :parse_environment
-  module_function :decode_uri
+  module_function :decode_json_from_env
 
 end

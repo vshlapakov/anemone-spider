@@ -63,7 +63,14 @@ class ArgenteamSpider
            :description => description,
            :images => [image]},
           {:start => offset})
-
+        upload('requests',
+          {:url => page.url.to_s,
+           :status => page.code,
+           :rs => page.body.length,
+           :duration => page.response_time,
+           :method => "GET",
+           :time => Time.now.to_i},
+          {:start => offset})
         offset += 1
         exit if offset > 10
       end
