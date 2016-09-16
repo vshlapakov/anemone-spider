@@ -22,7 +22,7 @@ class ArgenteamSpider
     return if not job_data
 
     job_key, job_auth = job_data["key"], job_data["auth"]
-    uri = URI.join("#{shub_storage}", "#{prefix}/#{job_key}/")
+    uri = URI.join("#{shub_storage}", "#{prefix}/#{job_key}")
     uri.query = URI.encode_www_form(params)
     http = Net::HTTP.new(uri.host, uri.port)
     http.use_ssl = (uri.scheme == "https")
@@ -36,7 +36,7 @@ class ArgenteamSpider
     if response.is_a?(Net::HTTPSuccess)
         logger.info "<-- HS #{response.code} #{response.uri} #{response.body}"
     else
-        logger.warning "HS bad response #{response}"
+        logger.warn "HS bad response #{response}"
     end
   end
 
@@ -63,7 +63,14 @@ class ArgenteamSpider
            :description => description,
            :images => [image]},
           {:start => offset})
-
+        upload('requests',
+          {:url => page.url.to_s,
+           :status => page.code,
+           :rs => page.body.length,
+           :duration => page.response_time,
+           :method => "GET",
+           :time => Time.now.to_i},
+          {:start => offset})
         offset += 1
         exit if offset > 10
       end
