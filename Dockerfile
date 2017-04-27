@@ -11,8 +11,6 @@ ADD Gemfile* /app/
 RUN bundle config --global silence_root_warning 1
 RUN bundle install
 
-RUN apt-get install -y python
-
 ADD . /app
 RUN ln -s /app/start-crawl /usr/sbin/start-crawl
 RUN ln -s /app/list-spiders /usr/sbin/list-spiders
