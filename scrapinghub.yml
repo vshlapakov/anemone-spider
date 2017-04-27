@@ -1,0 +1,5 @@
+projects:
+    default: 18255
+    custom:
+        id: 18255
+        image: true
