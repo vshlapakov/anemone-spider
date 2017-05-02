@@ -1,5 +1,10 @@
+endpoints:
+    local: http://33.33.33.51:8080/api/
 projects:
     default: 18255
     custom:
         id: 18255
+        image: true
+    local:
+        id: local/1111112
         image: true
