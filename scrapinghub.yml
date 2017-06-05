@@ -1,7 +1,7 @@
 endpoints:
     dev: https://app-develop.scrapinghub.com/api/
 projects:
-    target1: dev/109161
+    target1: 109161
     target2:
         id: dev/109161
         stack: scrapy:1.3
