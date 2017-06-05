@@ -2,9 +2,10 @@ endpoints:
     local: http://33.33.33.51:8080/api/
 projects:
     default: 18255
-    custom:
-        id: 18255
-        image: true
+    test: 109161
+    stack:
+        id: 109161
+        stack: scrapy:1.1
     local:
         id: local/1111112
-        image: true
+image: true
