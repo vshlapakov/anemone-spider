@@ -1,8 +1,10 @@
 endpoints:
     dev: https://app-develop.scrapinghub.com/api/
+    local: http://33.33.33.51:8080/api/
 projects:
     target1: 109161
     target2:
         id: dev/109161
         stack: scrapy:1.3
+    target3: local/1111112
 image: true
